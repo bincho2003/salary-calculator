@@ -12,6 +12,9 @@
 <!-- ★ 구글 애드센스 (승인 후 주석 해제 + 퍼블리셔 ID 교체) -->
 <!-- <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script> -->
  
+<!-- ★ 카카오 공유 SDK -->
+<script src="https://t1.kakaocdn.net/kakao_js_sdk/2.7.4/kakao.min.js" integrity="sha384-DKYJZ8NLiK8MN4/C5P2dtwCDH1lAGOnLA9N94w4VPnzkAehrTH86vUk8mFW46oWy" crossorigin="anonymous"></script>
+ 
 <style>
 :root{
   --navy:#0f172a; --navy-mid:#1e293b; --navy-light:#334155;
@@ -141,6 +144,8 @@ footer a{color:var(--em);text-decoration:none}
 .share-row{display:flex;gap:8px;margin-top:12px}
 .share-btn{flex:1;padding:10px;border-radius:var(--rs);border:1px solid var(--bdr);background:var(--navy);color:var(--sl-lt);font-size:12px;font-weight:600;font-family:inherit;cursor:pointer;text-align:center;transition:all .15s}
 .share-btn:hover{border-color:var(--em);color:var(--em)}
+.share-btn.kakao{background:#FAE100;border-color:#FAE100;color:#3C1E1E;font-weight:700}
+.share-btn.kakao:hover{background:#FBDC4A;border-color:#FBDC4A;color:#3C1E1E}
 </style>
 </head>
 <body>
@@ -270,6 +275,7 @@ footer a{color:var(--em);text-decoration:none}
         <div class="ai-body" id="s-ai-body"></div>
       </div>
       <div class="share-row">
+        <button class="share-btn kakao" onclick="shareKakao('salary')">카카오 공유</button>
         <button class="share-btn" onclick="copyResult('salary')">결과 복사</button>
         <button class="share-btn" onclick="window.print()">인쇄 / PDF</button>
       </div>
@@ -376,6 +382,10 @@ footer a{color:var(--em);text-decoration:none}
         <div class="ai-loading" id="l-ai-load"><div class="dot-pulse"><span></span><span></span><span></span></div>AI가 분석 중…</div>
         <div class="ai-body" id="l-ai-body"></div>
       </div>
+      <div class="share-row">
+        <button class="share-btn kakao" onclick="shareKakao('loan')">카카오 공유</button>
+        <button class="share-btn" onclick="copyResult('loan')">결과 복사</button>
+      </div>
     </div>
  
     <div class="info-sec">
@@ -462,6 +472,10 @@ footer a{color:var(--em);text-decoration:none}
         <div class="ai-hd"><div class="ai-icon">✦</div><div class="ai-title">AI 퇴직금 분석</div></div>
         <div class="ai-loading" id="rt-ai-load"><div class="dot-pulse"><span></span><span></span><span></span></div>AI가 분석 중…</div>
         <div class="ai-body" id="rt-ai-body"></div>
+      </div>
+      <div class="share-row">
+        <button class="share-btn kakao" onclick="shareKakao('retire')">카카오 공유</button>
+        <button class="share-btn" onclick="copyResult('retire')">결과 복사</button>
       </div>
     </div>
  
@@ -555,6 +569,10 @@ footer a{color:var(--em);text-decoration:none}
         <div class="ai-loading" id="h-ai-load"><div class="dot-pulse"><span></span><span></span><span></span></div>AI가 분석 중…</div>
         <div class="ai-body" id="h-ai-body"></div>
       </div>
+      <div class="share-row">
+        <button class="share-btn kakao" onclick="shareKakao('hourly')">카카오 공유</button>
+        <button class="share-btn" onclick="copyResult('hourly')">결과 복사</button>
+      </div>
     </div>
  
     <div class="info-sec">
@@ -642,6 +660,10 @@ footer a{color:var(--em);text-decoration:none}
         <div class="ai-hd"><div class="ai-icon">✦</div><div class="ai-title">AI 보험료 분석</div></div>
         <div class="ai-loading" id="hh-ai-load"><div class="dot-pulse"><span></span><span></span><span></span></div>AI가 분석 중…</div>
         <div class="ai-body" id="hh-ai-body"></div>
+      </div>
+      <div class="share-row">
+        <button class="share-btn kakao" onclick="shareKakao('health')">카카오 공유</button>
+        <button class="share-btn" onclick="copyResult('health')">결과 복사</button>
       </div>
     </div>
  
@@ -801,14 +823,87 @@ function calcSalary() {
   const prompt = `연봉 ${salary}만원, 공제율 ${taxPct}%, 월 실수령 ${netMan}만원, 부양가족 ${dep}명인 한국 직장인에게 2026년 기준 실용적인 분석 코멘트를 한국어로 작성. 형식: 1줄 핵심 요약(bold 포함) + 불릿 3개(동료 평균 비교, 절세 팁, 재무 조언). HTML만 사용(strong, span.hi, span.wa, ul.ai-bullets, li 태그). 각 불릿 50자 이내.`;
   runAI('s-ai-load', 's-ai-body', prompt, fallback);
 }
-function copyResult(type) {
-  let text = '';
-  if (type === 'salary') {
-    text = `연봉 ${document.getElementById('s-salary').value}만원 → 월 실수령 ${document.getElementById('s-net').textContent}원\n연 실수령 ${document.getElementById('s-annual').textContent}\n2026salary.site`;
+/* ═══════════ 카카오 SDK 초기화 ═══════════ */
+window.addEventListener('DOMContentLoaded', () => {
+  if (window.Kakao && !window.Kakao.isInitialized()) {
+    window.Kakao.init('a09cb6e9cc97bca052d31ea9152ada41'); // ← 카카오 디벨로퍼스에서 발급받은 JS 키로 교체
   }
-  navigator.clipboard.writeText(text).then(() => {
-    const btns = document.querySelectorAll('.share-btn');
-    btns.forEach(b => { if (b.textContent.includes('복사')) { b.textContent = '복사 완료 ✓'; setTimeout(() => b.textContent = '결과 복사', 1500); }});
+});
+ 
+/* 탭별 공유 텍스트 생성 */
+function getShareData(type) {
+  const url = location.href.split('?')[0];
+  if (type === 'salary') {
+    return {
+      title: `연봉 ${document.getElementById('s-salary').value}만원 실수령액`,
+      desc: `월 실수령 ${document.getElementById('s-net').textContent}원 · 연 ${document.getElementById('s-annual').textContent}`
+    };
+  }
+  if (type === 'loan') {
+    return {
+      title: `대출 ${document.getElementById('l-amt').value}억 이자 계산`,
+      desc: `월 납입금 ${document.getElementById('l-monthly').textContent}원`
+    };
+  }
+  if (type === 'retire') {
+    return {
+      title: `예상 퇴직금 계산 결과`,
+      desc: `세전 ${document.getElementById('rt-total').textContent}원`
+    };
+  }
+  if (type === 'hourly') {
+    return {
+      title: `시급 ${document.getElementById('h-wage').value}원 알바비 계산`,
+      desc: `월 예상 급여 ${document.getElementById('h-monthly').textContent}원`
+    };
+  }
+  if (type === 'health') {
+    return {
+      title: `건강보험료 계산 결과`,
+      desc: `월 ${document.getElementById('hh-total').textContent}원`
+    };
+  }
+  return { title: '급여계산기.kr', desc: '2026년 최신 급여 계산기 모음' };
+}
+ 
+/* ═══════════ 카카오톡 공유 ═══════════ */
+function shareKakao(type) {
+  const { title, desc } = getShareData(type);
+  const url = location.href.split('?')[0];
+ 
+  if (!window.Kakao || !window.Kakao.isInitialized()) {
+    // SDK 초기화 전이면 클립보드 복사로 폴백
+    navigator.clipboard.writeText(`${title}\n${desc}\n${url}`).then(() => {
+      alert('카카오 SDK 설정 전이라 텍스트가 복사되었습니다.\n(developers.kakao.com에서 JS 키 발급 후 코드에 입력하면 실제 카카오 공유 가능)');
+    });
+    return;
+  }
+ 
+  window.Kakao.Share.sendDefault({
+    objectType: 'feed',
+    content: {
+      title: title,
+      description: desc,
+      imageUrl: 'https://2026salary.site/og-image.png', // ← 대표 이미지 URL로 교체 (1200x630 권장)
+      link: { mobileWebUrl: url, webUrl: url }
+    },
+    buttons: [
+      { title: '계산기로 보기', link: { mobileWebUrl: url, webUrl: url } }
+    ]
+  });
+}
+ 
+/* 결과 복사 (전체 탭 지원) */
+function copyResult(type) {
+  const { title, desc } = getShareData(type);
+  const url = location.href.split('?')[0];
+  navigator.clipboard.writeText(`${title}\n${desc}\n${url}`).then((event) => {
+    const btn = document.activeElement;
+    if (btn && btn.classList.contains('share-btn')) {
+      const orig = btn.textContent;
+      btn.textContent = '복사 완료 ✓';
+      setTimeout(() => btn.textContent = orig, 1500);
+    }
   });
 }
  
