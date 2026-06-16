@@ -24,7 +24,7 @@
 <!-- <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script> -->
 
 <!-- ★ 카카오 공유 SDK -->
-<script src="https://t1.kakaocdn.net/kakao_js_sdk/2.7.4/kakao.min.js" integrity="sha384-DKYJZ8NLiK8MN4/C5P2dtwCDH1lAGOnLA9N94w4VPnzkAehrTH86vUk8mFW46oWy" crossorigin="anonymous"></script>
+<script src="https://t1.kakaocdn.net/kakao_js_sdk/2.7.4/kakao.min.js" crossorigin="anonymous"></script>
 
 <style>
 :root{
@@ -726,32 +726,17 @@ function fmtMan(n) {
   return fmtW(m);
 }
 
-/* ═══════════ AI 분석 공통 ═══════════ */
+/* ═══════════ AI 분석 공통 (로컬 분석만 사용) ═══════════ */
 async function runAI(loadId, bodyId, prompt, fallback) {
   const load = document.getElementById(loadId);
   const body = document.getElementById(bodyId);
   load.style.display = 'flex';
   body.classList.remove('show');
   body.innerHTML = '';
-  try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-6', max_tokens: 1000,
-        messages: [{ role: 'user', content: prompt }]
-      })
-    });
-    const data = await res.json();
-    const text = data.content?.[0]?.text || '';
-    load.style.display = 'none';
-    body.innerHTML = text;
-    body.classList.add('show');
-  } catch {
-    load.style.display = 'none';
-    body.innerHTML = fallback;
-    body.classList.add('show');
-  }
+  await new Promise(r => setTimeout(r, 500));
+  load.style.display = 'none';
+  body.innerHTML = fallback;
+  body.classList.add('show');
 }
 
 /* ══════════════════════════════
