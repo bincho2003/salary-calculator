@@ -1,0 +1,4 @@
+# 구글 애드센스 ads.txt
+# 아래 ca-pub-XXXXXXXXXXXXXXXX 부분을 본인 퍼블리셔 ID로 교체하세요
+# 예: ca-pub-1234567890123456
+google.com, ca-pub-XXXXXXXXXXXXXXXX, DIRECT, f08c47fec0942fa0
